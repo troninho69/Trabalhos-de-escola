@@ -1,0 +1,166 @@
+//bola
+let timer = 3;
+let bolaX = 300;
+let bolaY = 225;
+let tamanho = 25;
+let velocidadeX = 2;
+let velocidadeY = 2;
+let hitbox = tamanho / 2;
+//jogador 1
+let p1x = 20;
+let p1y = 190;
+let altura = 100;
+let largura = 10;
+//jogador 2
+let p2x = 570;
+let p2y = 190;
+//biblioteca
+let hit = false;
+//pontos
+let score1 = 0;
+let score2 = 0;
+var marcou = false;
+var marcou2 = false
+//musica
+let trilha;
+
+function preload(){
+  trilha = loadSound("spiderdance.m4a")
+}
+
+function setup() {
+  createCanvas(600, 450);
+  trilha.loop();
+}
+function draw() {
+  background(0);
+  inicioPartida();
+  colisao();
+  player(p1x, p1y);
+  movimentop1();
+  player(p2x, p2y);
+  colidir(p1x, p1y);
+  colidir(p2x, p2y);
+  movimentop2();
+  scores();
+  goal();
+  corrigir();
+}
+function bola() {
+  fill (255)
+  circle(bolaX, bolaY, tamanho);
+    bolaX += velocidadeX;
+    bolaY += velocidadeY;
+}
+
+function inicioPartida(){
+  if (frameCount % 60 == 0 && timer > 0) { 
+    timer --;
+  }
+  if(timer == 0){
+    bola();
+  }
+  if(timer > 0){
+    fill (255)
+    text (timer, 300, 30);
+  }else{
+    fill (255)
+    text ("", 300, 30);
+  }
+}
+
+
+
+function colisao() {
+  if (bolaX - hitbox > width) {
+    bolaX = 300;
+    bolaY = 225;
+    marcou = true;
+    velocidadeX = 2;
+    velocidadeY = 2;
+
+    timer = 3;
+  }
+  if (bolaX + hitbox < 0 ){
+    bolaX = 300;
+    bolaY = 255;
+    marcou2 = true;
+    velocidadeX = 2;
+    velocidadeY = 2;
+    timer = 3;
+  }
+  if (bolaY + hitbox > height || bolaY - hitbox < 0) {
+    velocidadeY *= -1;
+  }
+  if (velocidadeY > 5){velocidadeY = 5}
+  if (velocidadeX > 5){velocidadeX = 5}
+  if (velocidadeX < -5){velocidadeX = -5}
+  if (velocidadeY < -5){velocidadeX = -5}
+}
+function player(x, y){
+  fill (255)
+  rect (x, y, largura, altura);
+}
+function movimentop1(){
+  if (keyIsDown(UP_ARROW)){
+    p1y -= 5;
+  }
+  if (keyIsDown(DOWN_ARROW)){
+    p1y += 5;
+  }
+}
+function colidir(x, y){
+hit = collideRectCircle(x, y, largura, altura, bolaX, bolaY, hitbox);
+  if (hit){velocidadeX *= - 1}
+  if (hit && velocidadeX < 0){velocidadeX -= 0.2}
+  if (hit && velocidadeX < 0){velocidadeY -= 0.2}
+  if (hit && velocidadeX > 0){velocidadeX += 0.2}
+  if (hit && velocidadeX > 0){velocidadeY += 0.2}
+}
+function movimentop2(){
+    if (keyIsDown(87) === true){
+    p2y -= 5;
+  }
+  if (keyIsDown(83)===true){
+    p2y += 5;
+  }
+}
+function goal(){
+  if (marcou){
+    score1 += 1;
+    marcou = false;
+  }
+  if(marcou2){
+    score2  += 1;
+    marcou2 = false;
+    
+  }
+}
+function corrigir(){
+  if(p1y <= 0){
+    p1y = 1;
+  }
+  if(p1y >= 350){
+    p1y = 349;
+  }
+    if(p2y <= 0){
+    p2y = 1;
+  }
+  if(p2y >= 350){
+    p2y = 349;
+  }
+  
+}
+function scores(){
+  textAlign (CENTER, CENTER);
+  textSize (16);
+  fill(255);
+  rect (180, 18, 40, 20);
+  fill(0);
+  text (score1, 200, 30);
+  fill(255);
+  rect (380, 18, 40, 20);
+  fill (0)
+  text (score2, 400, 30);
+  
+}
